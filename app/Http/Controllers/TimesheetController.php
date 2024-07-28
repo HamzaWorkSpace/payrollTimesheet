@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Timesheet;
 use App\Models\User;
-use App\Models\Client;
 use App\Models\Contract;
+use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Carbon\Carbon;
@@ -131,13 +131,9 @@ class TimesheetController extends Controller
     {
         try {
             $request->validate([
-                'user_id' => 'required|exists:users,id',
                 'contract_id' => 'required|exists:contracts,id',
                 'client_id' => 'required|exists:clients,id',
-                'timesheet_start' => 'required|date',
-                'timesheet_end' => 'required|date',
-                'status' => 'required|string',
-                'total_unit' => 'required|integer|min:0',
+                'period' => 'required|string',
                 'hours' => 'required|array',
                 'hours.*' => 'required|numeric|min:0',
                 'notes' => 'sometimes|array',
@@ -145,10 +141,12 @@ class TimesheetController extends Controller
 
             $timesheet = Timesheet::findOrFail($id);
             $timesheet->update($request->all());
-            return redirect()->route('timesheets.index')->with('success', 'Timesheet updated successfully.');
+            return redirect()->route('timesheets.viewEmployeeTimesheets', ['user_id' => $timesheet->user_id , 'page' => 1])->with('success', 'Timesheet created successfully.');
         } catch (ModelNotFoundException $e) {
+            dd($e->getMessage());
             return redirect()->route('timesheets.index')->with('error', 'Timesheet not found.');
         } catch (\Exception $e) {
+            dd($e->getMessage());
             return redirect()->route('timesheets.index')->with('error', 'Failed to update timesheet.');
         }
     }
@@ -164,50 +162,49 @@ class TimesheetController extends Controller
         }
     }
 
+//    public function edit($id)
+//    {
+//        try {
+//            $timesheet = Timesheet::with(['user', 'contract.manager', 'client'])
+//                ->findOrFail($id);
+//            $selectedPeriod = $this->getPeriodFromDates($timesheet->timesheet_start, $timesheet->timesheet_end);
+//            $contracts = Contract::all();
+//            $clients = Client::all();
+//            $manager = User::where('role', 'manager')->get();
+//            $periods = $this->getWeeklyPeriodsFromStartOfYear();
+//
+//
+//            return view('crud.timesheets.edit', compact('timesheet',
+//                                                           'contracts',
+//                                                                      'clients',
+//                                                                      'manager',
+//                                                                      'periods',
+//                                                                      'selectedPeriod'
+//            ));
+//        } catch (ModelNotFoundException $e) {
+//            return redirect()->route('timesheets.index')->with('error', 'Timesheet not found.');
+//        } catch (\Exception $e) {
+//            return redirect()->route('timesheets.index')->with('error', 'Failed to load edit form.');
+//        }
+//    }
+
     public function edit($id)
     {
         try {
-//            $timesheet =  Timesheet::find($id);
-//
-//            $selectedUser = User::findOrFail($timesheet->user_id);
-//
-//            $selectedContract = Contract::findOrFail($timesheet->contract_id);
-//
-//            $selectedClient = DB::table('clients')->where('id', $timesheet->client_id)->value('name');
-//
-//            $selectedManager = User::findOrFail($selectedContract->manager_id);
-//
-
-//
-//            $selectedHours = $timesheet->hours;
-//
-//            $selectedNotes = $timesheet->notes;
-
-
-
+            $clients = Client::all();
             $timesheet = Timesheet::with(['user', 'contract.manager', 'client'])
                 ->findOrFail($id);
+
             $selectedPeriod = $this->getPeriodFromDates($timesheet->timesheet_start, $timesheet->timesheet_end);
-//          // dd($timesheet);
-//
             $contracts = Contract::all();
             $clients = Client::all();
             $manager = User::where('role', 'manager')->get();
             $periods = $this->getWeeklyPeriodsFromStartOfYear();
 
-            return view('crud.timesheets.edit', compact('timesheet',
-                                                           'contracts',
-                                                                      'clients',
-                                                                      'manager',
-                                                                      'periods',
-                                                                      'selectedPeriod'
-//
-            ));
+            return view('crud.timesheets.edit', compact('timesheet', 'contracts', 'clients', 'manager', 'periods', 'selectedPeriod'));
         } catch (ModelNotFoundException $e) {
-            dd($e->getMessage());
             return redirect()->route('timesheets.index')->with('error', 'Timesheet not found.');
         } catch (\Exception $e) {
-            dd($e->getMessage());
             return redirect()->route('timesheets.index')->with('error', 'Failed to load edit form.');
         }
     }

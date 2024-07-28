@@ -29,7 +29,9 @@
                                                     <label class="form-label mb-0 mx-2 text-muted">Business *</label>
                                                     <select class="form-select select2" name="client_id" id="client">
                                                         @foreach($clients as $client)
-                                                            <option value="{{ $client->id }}" {{ $client->id == $timesheet->client->id? 'selected' : '' }}>{{ $client->name }}</option>
+                                                            <option value="{{ $client->id }}" {{ $client->id == $timesheet->client_id ? 'selected' : '' }}>
+                                                                {{ $client->name }}
+                                                            </option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -51,7 +53,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Removed the save button from here -->
                                 </div>
                             </div>
                         </div>

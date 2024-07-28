@@ -41,63 +41,79 @@ class Timesheet extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public function getContractTitleAttribute()
+
+    // Accessor with debugging
+    public function getClientIdAttribute($value)
     {
-        return $this->contract->contract_title;
+        \Log::info('Accessor: getClientIdAttribute', ['value' => $value]);
+        return $value;
     }
 
-    public function getClientIdAttribute()
+    // Mutator with debugging
+    public function setClientIdAttribute($value)
     {
-        return $this->contract->client_id;
+        \Log::info('Mutator: setClientIdAttribute', ['value' => $value]);
+        $this->attributes['client_id'] = $value;
     }
 
-    public function getManagerIdAttribute()
-    {
-        return $this->contract->manager_id;
-    }
 
-    public function getContractTypeAttribute()
-    {
-        return $this->contract->contract_type;
-    }
-
-    public function getContractStartDateAttribute()
-    {
-        return $this->contract->contract_start_date;
-    }
-
-    public function getContractEndDateAttribute()
-    {
-        return $this->contract->contract_end_date;
-    }
-
-    public function getPayRateAttribute()
-    {
-        return $this->contract->pay_rate;
-    }
-
-    public function getUnitOfPayAttribute()
-    {
-        return $this->contract->unit_of_pay;
-    }
-
-    public function getPayAmountAttribute()
-    {
-        return $this->contract->pay_amount;
-    }
-
-    public function getChargeAmountAttribute()
-    {
-        return $this->contract->charge_amount;
-    }
-
-    public function getClientAttribute()
-    {
-        return $this->contract->client;
-    }
-
-    public function getManagerAttribute()
-    {
-        return $this->contract->manager;
-    }
+//    public function getContractTitleAttribute()
+//    {
+//        return $this->contract->contract_title;
+//    }
+//
+//    public function getClientIdAttribute()
+//    {
+//        return $this->contract->client_id;
+//    }
+//
+//    public function getManagerIdAttribute()
+//    {
+//        return $this->contract->manager_id;
+//    }
+//
+//    public function getContractTypeAttribute()
+//    {
+//        return $this->contract->contract_type;
+//    }
+//
+//    public function getContractStartDateAttribute()
+//    {
+//        return $this->contract->contract_start_date;
+//    }
+//
+//    public function getContractEndDateAttribute()
+//    {
+//        return $this->contract->contract_end_date;
+//    }
+//
+//    public function getPayRateAttribute()
+//    {
+//        return $this->contract->pay_rate;
+//    }
+//
+//    public function getUnitOfPayAttribute()
+//    {
+//        return $this->contract->unit_of_pay;
+//    }
+//
+//    public function getPayAmountAttribute()
+//    {
+//        return $this->contract->pay_amount;
+//    }
+//
+//    public function getChargeAmountAttribute()
+//    {
+//        return $this->contract->charge_amount;
+//    }
+//
+//    public function getClientAttribute()
+//    {
+//        return $this->contract->client;
+//    }
+//
+//    public function getManagerAttribute()
+//    {
+//        return $this->contract->manager;
+//    }
 }

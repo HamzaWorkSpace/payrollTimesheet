@@ -41,14 +41,9 @@ class Contract extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    public function client()
-    {
-        return $this->belongsTo(Client::class);
-    }
-
     public function manager()
     {
         return $this->belongsTo(User::class, 'manager_id');
     }
+
 }
