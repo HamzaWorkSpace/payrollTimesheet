@@ -69,13 +69,14 @@ Route::middleware(['auth', 'role:admin'])->group(
         Route::delete('userTimesheets/{id}', [TimesheetController::class, 'destroy'])->name('timesheets.destroy');
         Route::put('userTimesheets/{timesheet}', [TimesheetController::class, 'changeTimesheetStatus'])->name('timesheets.changeTimesheetStatus');
         Route::get('userTimesheets/{user_id}', [TimesheetController::class, 'viewSpecificEmployeeTimesheets'])->name('timesheets.viewEmployeeTimesheets');
-
+        Route::post('/timesheets/copy', [TimesheetController::class, 'copy'])->name('timesheets.copy');
 
     }
 ); // end group admin
 
 Route::middleware(['auth', 'role:user'])->group(
     function () {
+       // Route::get('userTimesheets/{user_id}', [TimesheetController::class, 'viewSpecificEmployeeTimesheets'])->name('userTimesheets.viewTimesheets');
         Route::get('/user/dashboard', [UserController::class, 'UserDashboard'])->name('user.dashboard');
         Route::post('/user/profile/store', [UserController::class, 'UserProfileStore'])->name('user.profile.store');
         Route::post('/user/update/password', [UserController::class, 'UserUpdatePassword'])->name('user.update.password');

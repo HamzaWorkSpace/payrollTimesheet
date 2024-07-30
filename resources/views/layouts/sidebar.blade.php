@@ -164,6 +164,8 @@
                     </a>
                 </li>
 
+{{--            {{dd($userRole);}}--}}
+
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#timesheet" role="button" aria-expanded="false" aria-controls="timesheet">
                         <i class="link-icon" data-feather="clock"></i>
@@ -173,13 +175,8 @@
                     <div class="collapse" id="timesheet">
                         <ul class="nav sub-menu">
                             <li class="nav-item">
-                                <a href="pages/email/inbox.html" class="nav-link">View Timesheet</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="pages/email/read.html" class="nav-link">Outstanding Timesheet</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="pages/email/compose.html" class="nav-link">Bulk Create Timesheet</a>
+{{--                                <a href="{{ route('timesheets.user_timesheet',$userRole = auth()->user()) }}" class="nav-link">View Timesheet</a>--}}
+                                <a href="" class="nav-link">View Timesheet</a>
                             </li>
                         </ul>
                     </div>

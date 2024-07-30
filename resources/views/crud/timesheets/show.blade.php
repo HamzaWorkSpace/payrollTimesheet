@@ -88,10 +88,10 @@
                                 <p class="p-2 my-2 text-nowrap">{{$timesheet->contract->place_of_employment}}</p>
                                 <p class="p-2 my-2">{{$timesheet->contract->pay_schedule}}</p>
                                 <p class="p-2 my-2">Total hours</p>
-                                <p class="p-2 my-2">{{$timesheet->manager->name}}</p>
+{{--                                <p class="p-2 my-2">{{$timesheet->managers->name}}</p>--}}
                                 <p class="p-2 my-2">No info</p>
                                 <p class="p-2 my-2">{{$timesheet->contract->place_of_employment}}</p>
-                                <p class="p-2 my-2">{{$timesheet->manager->name}}</p>
+{{--                                <p class="p-2 my-2">{{$timesheet->manager->name}}</p>--}}
                             </div>
                         </div>
                         <div class="col-md-2 col-2">

@@ -162,39 +162,12 @@ class TimesheetController extends Controller
         }
     }
 
-//    public function edit($id)
-//    {
-//        try {
-//            $timesheet = Timesheet::with(['user', 'contract.manager', 'client'])
-//                ->findOrFail($id);
-//            $selectedPeriod = $this->getPeriodFromDates($timesheet->timesheet_start, $timesheet->timesheet_end);
-//            $contracts = Contract::all();
-//            $clients = Client::all();
-//            $manager = User::where('role', 'manager')->get();
-//            $periods = $this->getWeeklyPeriodsFromStartOfYear();
-//
-//
-//            return view('crud.timesheets.edit', compact('timesheet',
-//                                                           'contracts',
-//                                                                      'clients',
-//                                                                      'manager',
-//                                                                      'periods',
-//                                                                      'selectedPeriod'
-//            ));
-//        } catch (ModelNotFoundException $e) {
-//            return redirect()->route('timesheets.index')->with('error', 'Timesheet not found.');
-//        } catch (\Exception $e) {
-//            return redirect()->route('timesheets.index')->with('error', 'Failed to load edit form.');
-//        }
-//    }
-
     public function edit($id)
     {
         try {
             $clients = Client::all();
             $timesheet = Timesheet::with(['user', 'contract.manager', 'client'])
                 ->findOrFail($id);
-
             $selectedPeriod = $this->getPeriodFromDates($timesheet->timesheet_start, $timesheet->timesheet_end);
             $contracts = Contract::all();
             $clients = Client::all();
@@ -227,23 +200,84 @@ class TimesheetController extends Controller
         }
     }
 
-    public function copy(Request $request, $id)
+    public function copy(Request $request)
     {
         try {
-            $sourceTimesheet = Timesheet::findOrFail($id);
+            $sourceTimesheet = Timesheet::findOrFail($request->input('timesheet_id'));
 
             $newTimesheet = $sourceTimesheet->replicate();
-            $newTimesheet->timesheet_start = Carbon::createFromFormat('Y-m-d', $request->input('copyFrom'))->startOfWeek();
-            $newTimesheet->timesheet_end = Carbon::createFromFormat('Y-m-d', $request->input('copyTo'))->endOfWeek();
+
+            // Calculate new start and end dates
+            $newStart = Carbon::createFromFormat('d F Y', explode(' - ', $request->input('copy_period'))[0])->startOfWeek();
+            $newEnd = Carbon::createFromFormat('d F Y', explode(' - ', $request->input('copy_period'))[1])->endOfWeek();
+            $newTimesheet->timesheet_start = $newStart->format('Y-m-d');
+            $newTimesheet->timesheet_end = $newEnd->format('Y-m-d');
+            $newTimesheet->status = 'pending';
+
+            // Calculate the date difference in days
+            $originalStart = Carbon::parse($sourceTimesheet->timesheet_start);
+            $dateDifference = $newStart->diffInDays($originalStart);
+
+            // Update hours and notes keys
+            $updatedHours = [];
+            $updatedNotes = [];
+            $sourceHours = is_string($sourceTimesheet->hours) ? json_decode($sourceTimesheet->hours, true) : $sourceTimesheet->hours;
+            $sourceNotes = is_string($sourceTimesheet->notes) ? json_decode($sourceTimesheet->notes, true) : $sourceTimesheet->notes;
+
+            foreach ($sourceHours as $date => $hours) {
+                $newDate = Carbon::parse($date)->addDays($dateDifference)->format('Y-m-d');
+                $updatedHours[$newDate] = $hours;
+            }
+            foreach ($sourceNotes as $date => $notes) {
+                $newDate = Carbon::parse($date)->addDays($dateDifference)->format('Y-m-d');
+                $updatedNotes[$newDate] = $notes;
+            }
+
+            $newTimesheet->hours = $updatedHours;
+            $newTimesheet->notes = $updatedNotes;
+
             $newTimesheet->save();
 
-            return redirect()->route('timesheets.index')->with('success', 'Timesheet copied successfully.');
+            return redirect()->route('timesheets.viewEmployeeTimesheets', ['user_id' => $newTimesheet->user_id, 'page' => 1])->with('success', 'Timesheet copied successfully.');
         } catch (ModelNotFoundException $e) {
             return redirect()->route('timesheets.index')->with('error', 'Source timesheet not found.');
         } catch (\Exception $e) {
             return redirect()->route('timesheets.index')->with('error', 'Failed to copy timesheet.');
         }
     }
+
+//    public function copy(Request $request)
+//    {
+//
+//        try {
+//            $sourceTimesheet = Timesheet::findOrFail($request->input('timesheet_id'));
+//
+//            $newTimesheet = $sourceTimesheet->replicate();
+//
+//            $hours = $request->input('hours');
+//
+//            dd($hours);
+//
+//            $newTimesheet->timesheet_start = Carbon::createFromFormat('d F Y', explode(' - ', $request->input('copy_period'))[0])->startOfWeek();
+//            $newTimesheet->timesheet_end = Carbon::createFromFormat('d F Y', explode(' - ', $request->input('copy_period'))[1])->endOfWeek();
+//            $newTimesheet->status = 'pending';
+//
+//            //$hours = $newTimesheet->hours;
+//            //$notes = $newTimesheet->notes
+//
+//
+//            $newTimesheet->save();
+//
+//
+//
+//            return redirect()->route('timesheets.viewEmployeeTimesheets', ['user_id' => $newTimesheet->user_id, 'page' => 1])->with('success', 'Timesheet copied successfully.');
+//        } catch (ModelNotFoundException $e) {
+//            return redirect()->route('timesheets.index')->with('error', 'Source timesheet not found.');
+//        } catch (\Exception $e) {
+//            return redirect()->route('timesheets.index')->with('error', 'Failed to copy timesheet.');
+//        }
+//    }
+
 
     public function changeTimesheetStatus(Request $request, $id)
     {
@@ -388,9 +422,15 @@ class TimesheetController extends Controller
                 )
                 ->paginate(15);
 
-            return view('crud.timesheets.employeeTimesheet', compact('employeeTimesheets'));
+            $periods = $this->getWeeklyPeriodsFromStartOfYear();
+
+            return view('crud.timesheets.employeeTimesheet', compact('employeeTimesheets','periods'));
         } catch (\Exception $e) {
             return redirect()->route('timesheets.index')->with('error', 'Failed to retrieve timesheets.');
         }
     }
+
+
+
+
 }

@@ -4,7 +4,6 @@
     @vite('resources/css/app.css')
     @vite('resources/css/datatables.css')
 @endsection
-
 @section('admin')
     <div class="page-content">
         <nav class="flex justify-between items-center">
@@ -60,18 +59,29 @@
                                             </button>
                                         </td>
                                         <td>
-                                            <a href="{{ route('userTimesheets.edit', ['id' => $employeeTimesheet->timesheet_id, 'page' => request()->get('page', 1)]) }}" class="btn"><i data-feather="edit" class="feather feather-edit" ></i></a>
-                                            <button class="btn" onclick="copyTimesheet({{ $employeeTimesheet->timesheet_id }})"><i data-feather="copy"></i></button>
+                                            <a href="{{ route('userTimesheets.edit', ['id' => $employeeTimesheet->timesheet_id, 'page' => request()->get('page', 1)]) }}" class="btn"><i data-feather="edit" class="feather feather-edit"></i></a>
+
+                                            <button
+                                                class="btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#copyTimesheetModal{{ $employeeTimesheet->timesheet_id }}"
+                                                data-timesheet_id="{{ $employeeTimesheet->timesheet_id }}"
+                                                id="copyModel">
+                                                <i data-feather="copy"></i>
+                                            </button>
+
                                             <button
                                                 class="btn"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#deleteModal{{ $employeeTimesheet->timesheet_id }}"
                                                 data-timesheet_id="{{ $employeeTimesheet->timesheet_id }}">
-                                                <i data-feather="trash-2" class="feather feather-edit" ></i>
+                                                <i data-feather="trash-2" class="feather feather-edit"></i>
                                             </button>
                                         </td>
                                     </tr>
                                     @include('crud.partials.timesheet_approval_confirmation_modal', ['employeeTimesheet' => $employeeTimesheet])
+                                    @include('crud.partials.delete_timesheet_modal', ['employeeTimesheet' => $employeeTimesheet])
+                                    @include('crud.partials.copy_timesheet_model', ['employeeTimesheet' => $employeeTimesheet, 'periods' => $periods])
                                 @endforeach
                                 </tbody>
 
@@ -79,7 +89,6 @@
 
                         </div>
                         <div class="mt-3">
-                            {{ $employeeTimesheets->links('vendor.pagination.bootstrap-5') }}
                         </div>
                     </div>
                 </div>
@@ -87,15 +96,8 @@
 
         </div>
     </div>
-
-    @foreach ($employeeTimesheets as $employeeTimesheet)
-        @include('crud.partials.delete_timesheet_modal', ['employeeTimesheet' => $employeeTimesheet])
-    @endforeach
 @endsection
-
 @section('scripts')
-    @vite('resources/js/app.js')
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var deleteModals = document.querySelectorAll('[id^="deleteModal"]');

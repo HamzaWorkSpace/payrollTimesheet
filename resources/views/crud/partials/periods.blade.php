@@ -1,3 +1,5 @@
+{{$timesheet}}
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const periodDropdown = document.getElementById('period');
@@ -7,6 +9,9 @@
         // Convert PHP variables to JavaScript objects
         const selectedHours = @json($selectedHours) ?? {};
         const selectedNotes = @json($selectedNotes) ?? {};
+
+        console.log('Selected Hours:', selectedHours);
+        console.log('Selected Notes:', selectedNotes);
 
         // Add event listener for period dropdown change
         periodDropdown.addEventListener('change', function() {
@@ -32,9 +37,13 @@
                 const dayLabel = currentDate.toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
                 const dateKey = currentDate.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
 
+                console.log('dateKey:', dateKey);
+
                 // Get values from selectedHours and selectedNotes
                 const hoursValue = selectedHours[dateKey] !== undefined ? selectedHours[dateKey] : '';
                 const notesValue = selectedNotes[dateKey] !== undefined ? selectedNotes[dateKey] : '';
+                console.log('hoursValue:', hoursValue);
+                console.log('notesValue:', notesValue);
 
                 weekDaysHtml += `
                 <div class="row mb-3">

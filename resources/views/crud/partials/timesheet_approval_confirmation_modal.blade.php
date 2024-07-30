@@ -35,8 +35,8 @@
 
 
 @section('scripts')
-        @vite('resources/js/app.js')
-        @vite('resources/js/datatables.js')
+    @vite('resources/js/app.js')
+    @vite('resources/js/datatables.js')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             let confirmationButtons = document.querySelectorAll('[id^="confirmationModel"]');

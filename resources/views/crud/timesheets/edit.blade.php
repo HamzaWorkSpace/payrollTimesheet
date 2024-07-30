@@ -109,5 +109,5 @@
 
 @section('scripts')
     @vite('resources/js/app.js')
-    @include('crud.partials.periods', ['selectedHours' => $timesheet->hours, 'selectedNotes' =>  $timesheet->notes])
+    @include('crud.partials.periods', ['selectedHours' => $timesheet->hours, 'selectedNotes' =>  $timesheet->notes,'timesheet' =>  $timesheet,'periods'=>$periods])
 @endsection
